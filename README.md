@@ -4,7 +4,7 @@
 
 A proxy server that lets you use Anthropic clients with Gemini, OpenAI, or Anthropic models themselves (a transparent proxy of sorts), all via LiteLLM. 🌉
 
-
+![prompt cache 截图](屏幕截图 2026-06-02 111819.png)
 ![Anthropic API Proxy](pic.png)
 
 ## Quick Start ⚡
