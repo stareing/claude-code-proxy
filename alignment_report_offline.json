@@ -1,0 +1,71 @@
+{
+  "ok": true,
+  "checks": [
+    {
+      "name": "offline_conversion_consistency",
+      "ok": true,
+      "detail": "conversion invariants checked",
+      "data": {
+        "checks": {
+          "request_has_openai_tools": true,
+          "tool_choice_is_function": true,
+          "assistant_tool_use_becomes_tool_calls": true,
+          "tool_result_becomes_role_tool": true,
+          "response_tool_call_becomes_tool_use": true,
+          "usage_cache_hit_preserved": true
+        },
+        "sample_litellm_messages": [
+          {
+            "role": "user",
+            "content": "Call add."
+          },
+          {
+            "role": "assistant",
+            "content": "",
+            "tool_calls": [
+              {
+                "id": "toolu_test",
+                "type": "function",
+                "function": {
+                  "name": "add",
+                  "arguments": "{\"a\":2,\"b\":3}"
+                }
+              }
+            ]
+          },
+          {
+            "role": "tool",
+            "tool_call_id": "toolu_test",
+            "content": "{\"sum\":5}"
+          }
+        ],
+        "restored": {
+          "id": "chatcmpl_test",
+          "model": "openai/gpt-4.1",
+          "role": "assistant",
+          "content": [
+            {
+              "type": "tool_use",
+              "id": "call_test",
+              "name": "add",
+              "input": {
+                "a": 2,
+                "b": 3
+              }
+            }
+          ],
+          "type": "message",
+          "stop_reason": "tool_use",
+          "stop_sequence": null,
+          "usage": {
+            "input_tokens": 123,
+            "output_tokens": 7,
+            "cache_creation_input_tokens": 24,
+            "cache_read_input_tokens": 99
+          }
+        }
+      }
+    }
+  ],
+  "artifacts": {}
+}

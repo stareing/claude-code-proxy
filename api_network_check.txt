@@ -1,0 +1,1 @@
+DNS_FAILED gaierror(-3, 'Temporary failure in name resolution')

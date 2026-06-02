@@ -1,0 +1,262 @@
+{
+  "ok": true,
+  "checks": [
+    {
+      "name": "offline_conversion_consistency",
+      "ok": true,
+      "detail": "conversion invariants checked",
+      "data": {
+        "checks": {
+          "request_has_openai_tools": true,
+          "tool_choice_is_function": true,
+          "assistant_tool_use_becomes_tool_calls": true,
+          "tool_result_becomes_role_tool": true,
+          "response_tool_call_becomes_tool_use": true,
+          "usage_cache_hit_preserved": true
+        },
+        "sample_litellm_messages": [
+          {
+            "role": "user",
+            "content": "Call add."
+          },
+          {
+            "role": "assistant",
+            "content": null,
+            "tool_calls": [
+              {
+                "id": "toolu_test",
+                "type": "function",
+                "function": {
+                  "name": "add",
+                  "arguments": "{\"a\":2,\"b\":3}"
+                }
+              }
+            ]
+          },
+          {
+            "role": "tool",
+            "tool_call_id": "toolu_test",
+            "content": "{\"sum\":5}"
+          }
+        ],
+        "restored": {
+          "id": "chatcmpl_test",
+          "model": "openai/deepseek-v4-pro-260425",
+          "role": "assistant",
+          "content": [
+            {
+              "type": "tool_use",
+              "id": "call_test",
+              "name": "add",
+              "input": {
+                "a": 2,
+                "b": 3
+              }
+            }
+          ],
+          "type": "message",
+          "stop_reason": "tool_use",
+          "stop_sequence": null,
+          "usage": {
+            "input_tokens": 123,
+            "output_tokens": 7,
+            "cache_creation_input_tokens": 24,
+            "cache_read_input_tokens": 99
+          }
+        }
+      }
+    },
+    {
+      "name": "direct_openai_tool_call",
+      "ok": true,
+      "detail": "upstream returned OpenAI tool_calls",
+      "data": {
+        "tool_call": {
+          "function": {
+            "arguments": "{\"a\": 2, \"b\": 3}",
+            "name": "add"
+          },
+          "id": "call_4opc7thzqd5v93my1n7bs3bh",
+          "type": "function"
+        },
+        "usage": {
+          "completion_tokens": 127,
+          "prompt_tokens": 305,
+          "total_tokens": 432,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 127
+          }
+        }
+      }
+    },
+    {
+      "name": "direct_openai_stream_tool_call",
+      "ok": true,
+      "detail": "upstream stream returned OpenAI tool_calls",
+      "data": {
+        "reconstructed": {
+          "text": "",
+          "tool_calls": [
+            {
+              "id": "call_oouw0o936lkpfz9v1l5toldz",
+              "type": "function",
+              "function": {
+                "name": "add",
+                "arguments": "{\"a\": 2, \"b\": 3}"
+              }
+            },
+            {
+              "id": "call_r2tz0sy8u40dceyoufmmz3q7",
+              "type": "function",
+              "function": {
+                "name": "add",
+                "arguments": "{\"a\": 2, \"b\": 3}"
+              }
+            }
+          ],
+          "usage": {
+            "completion_tokens": 127,
+            "prompt_tokens": 305,
+            "total_tokens": 432,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 127
+            }
+          },
+          "finish_reason": "tool_calls"
+        },
+        "events_seen": 14
+      }
+    },
+    {
+      "name": "direct_openai_stream_usage_present",
+      "ok": true,
+      "detail": "upstream stream included usage",
+      "data": {
+        "usage": {
+          "completion_tokens": 127,
+          "prompt_tokens": 305,
+          "total_tokens": 432,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 127
+          }
+        }
+      }
+    },
+    {
+      "name": "proxy_nonstream_restore_tool_use",
+      "ok": true,
+      "detail": "proxy restored OpenAI tool_calls to Anthropic tool_use",
+      "data": {
+        "tool_use": {
+          "type": "tool_use",
+          "id": "call_j95yqjz73450lsj8l4a80vsm",
+          "name": "add",
+          "input": {
+            "a": 2,
+            "b": 3
+          }
+        },
+        "stop_reason": "tool_use",
+        "usage": {
+          "input_tokens": 305,
+          "output_tokens": 62,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0
+        }
+      }
+    },
+    {
+      "name": "proxy_tool_result_followup",
+      "ok": true,
+      "detail": "tool_result round-trip accepted by upstream",
+      "data": {
+        "text": "final=5",
+        "usage": {
+          "input_tokens": 98,
+          "output_tokens": 29,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0
+        }
+      }
+    },
+    {
+      "name": "proxy_stream_restore_tool_use",
+      "ok": true,
+      "detail": "stream SSE reconstructed to Anthropic tool_use",
+      "data": {
+        "tool_use": {
+          "type": "tool_use",
+          "id": "call_q92unfust3h9z9ia5axmba7g",
+          "name": "add",
+          "input": {
+            "a": 2,
+            "b": 3
+          }
+        },
+        "stop_reason": "tool_use",
+        "usage": {
+          "output_tokens": 111,
+          "input_tokens": 305,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0
+        },
+        "events_seen": 11
+      }
+    },
+    {
+      "name": "proxy_stream_usage_present",
+      "ok": true,
+      "detail": "stream message_delta included token/cache usage",
+      "data": {
+        "usage": {
+          "output_tokens": 111,
+          "input_tokens": 305,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0
+        }
+      }
+    },
+    {
+      "name": "proxy_kv_cache_hit",
+      "ok": true,
+      "detail": "at least one repeated-prefix request reported cache hit",
+      "data": {
+        "hits": [
+          0,
+          19712,
+          19712
+        ],
+        "usages": [
+          {
+            "input_tokens": 19832,
+            "output_tokens": 8,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0
+          },
+          {
+            "input_tokens": 19832,
+            "output_tokens": 8,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 19712
+          },
+          {
+            "input_tokens": 19832,
+            "output_tokens": 8,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 19712
+          }
+        ]
+      }
+    }
+  ],
+  "artifacts": {}
+}
